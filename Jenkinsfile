@@ -21,8 +21,8 @@ pipeline {
                     sudo apt update -y
                     sudo apt install -y python3 git
                     git clone https://github.com/shekharbo/hello-world.git
-                    cd hello-world-python
-                    python3 app.py &
+                    cd /home/ubuntu/hello-world/hello-world
+                    python3 main.py &
                     exit
                     EOF
                     '''
