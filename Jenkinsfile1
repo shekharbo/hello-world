@@ -15,7 +15,7 @@ pipeline {
         stage('Checkout') {
             steps {
                 // Checkout code from Git repository
-                git branch: 'main', url: 'https://github.com/vijit8jan/hello-world.git'
+                git branch: 'main', url: 'https://github.com/shekharbo/hello-world.git'
             }
         }
         stage('Build and Test') {
@@ -24,7 +24,7 @@ pipeline {
                     try {
                         // Run tests
                         sh "rm -rf hello-world"
-                        sh "git clone https://github.com/vijit8jan/hello-world.git"
+                        sh "git clone https://github.com/shekharbo/hello-world.git"
                         sh "cd hello-world"
                     } catch (Exception e) {
                         currentBuild.result = 'FAILURE'
@@ -91,7 +91,7 @@ pipeline {
                 script {
                     // Stop and remove the Docker container after approval stage
                     input message: 'Do you want to cleanup?', ok: 'Cleanup'
-                    sh "docker stop ${CONTAINER_NAME} || true && docker rm ${CONTAINER_NAME} || true"
+                    sh "docker stop pythonapp || true && docker rm pythonapp || true"
                     echo 'Cleanup completed successfully!'
                 }
             }
