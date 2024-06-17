@@ -1,0 +1,113 @@
+pipeline {
+    agent any
+    environment {
+        // Define environment variables
+        //AWS_ACCESS_KEY_ID = credentials('aws-access-key-id')
+       // AWS_SECRET_ACCESS_KEY = credentials('aws-secret-access-key')
+        //SSH_KEY = credentials('ssh_key')
+        //EC2_IP = '52.3.249.142'
+    }
+
+    tools {
+       dockerTool 'Docker'
+    }
+    stages {
+        stage('Checkout') {
+            steps {
+                // Checkout code from Git repository
+                git branch: 'main', url: 'https://github.com/vijit8jan/hello-world.git'
+            }
+        }
+        stage('Build and Test') {
+            steps {
+                script {
+                    try {
+                        // Run tests
+                        sh "rm -rf hello-world"
+                        sh "git clone https://github.com/vijit8jan/hello-world.git"
+                        sh "cd hello-world"
+                    } catch (Exception e) {
+                        currentBuild.result = 'FAILURE'
+                        error "Build and Test stage failed: ${e.message}"
+                    }
+                }
+            }
+        }
+
+        stage('Build Docker Image') {
+            when {
+                expression {
+                    currentBuild.result == null || currentBuild.result == 'SUCCESS'
+                }
+            }
+            steps {
+                script {
+                    try {
+                        // Build the Docker image
+                        sh "docker build -t pythonapp ."
+                    } catch (Exception e) {
+                        currentBuild.result = 'FAILURE'
+                        error "Build Docker Image stage failed: ${e.message}"
+                    }
+                }
+            }
+        }
+
+        stage('Approval') {
+            when {
+                expression {
+                    currentBuild.result == null || currentBuild.result == 'SUCCESS'
+                }
+            }
+            steps {
+                script {
+                    input message: 'Do you approve the deployment?', ok: 'Deploy'
+                }
+            }
+        }
+
+        stage('Deploy') {
+            when {
+                expression {
+                    currentBuild.result == null || currentBuild.result == 'SUCCESS'
+                }
+            }
+            steps {
+                script {
+                    try {
+                        // Run the Docker container
+                        sh "docker run --name pythonapp -d -p 9000:80 pythonapp"
+                        echo 'Application deployed successfully!'
+                    } catch (Exception e) {
+                        currentBuild.result = 'FAILURE'
+                        error "Deploy stage failed: ${e.message}"
+                    }
+                }
+            }
+        }
+
+        stage('Cleanup') {
+            steps {
+                script {
+                    // Stop and remove the Docker container after approval stage
+                    input message: 'Do you want to cleanup?', ok: 'Cleanup'
+                    sh "docker stop ${CONTAINER_NAME} || true && docker rm ${CONTAINER_NAME} || true"
+                    echo 'Cleanup completed successfully!'
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            script {
+                // Print log message based on the final build status
+                if (currentBuild.result == 'SUCCESS') {
+                    echo 'Pipeline completed successfully!'
+                } else {
+                    echo 'Pipeline failed!'
+                }
+            }
+        }
+    }
+}
