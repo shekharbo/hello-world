@@ -1,6 +1,6 @@
 pipeline {
     agent {
-        Docker {
+        docker {
             image 'python:3.9'  // Replace with your desired Python version
             args '-u root'  // May be needed depending on permissions
         }
