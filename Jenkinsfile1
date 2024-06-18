@@ -1,6 +1,6 @@
 pipeline {
     agent {
-        Docker {
+        docker {
             image 'python:3.9'  // Replace with your desired Python version
             args '-u root'  // May be needed depending on permissions
         }
@@ -11,16 +11,14 @@ pipeline {
         AWS_REGION = "us-east-1"
         AWS_ECR_REPO = "github-poc"
     }
-    
     stages {
-          stage('Checkout') {
+        stage('Checkout') {
             steps {
                 retry(3) {
                     checkout([$class: 'GitSCM', branches: [[name: '*/main']], userRemoteConfigs: [[url: 'https://github.com/shekharbo/hello-world.git']]])
                 }
             }
         }
-       
         
         stage('Unit Test') {
             steps {
@@ -41,7 +39,7 @@ pipeline {
         stage('SCA and SonarQube') {
             steps {
                 withSonarQubeEnv('SonarQubeServer') {
-                    sh "sonar-scanner -Dsonar.projectKey=hello-world -Dsonar.sources=src -Dsonar.host.url=http://54.144.52.38:9000 -Dsonar.login=squ_fbfc3d6e4838528f0ebc3bb4633196570f56aee3"
+                    sh "sonar-scanner -Dsonar.projectKey=hello-world -Dsonar.sources=src -Dsonar.host.url=${SONARQUBE_SERVER} -Dsonar.login=squ_fbfc3d6e4838528f0ebc3bb4633196570f56aee3"
                 }
             }
         }
@@ -70,7 +68,7 @@ pipeline {
         
         stage('Docker Scan') {
             steps {
-                sh 'docker scan ${AWS_ECR_REPO}'
+                sh "docker scan ${AWS_ECR_REPO}"
             }
         }
         
@@ -97,4 +95,3 @@ pipeline {
         }
     }
 }
-
