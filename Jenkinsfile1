@@ -1,6 +1,9 @@
 pipeline {
-    agent any
-    
+    agent {
+        docker {
+            image 'python:3.9'  // Replace with your desired Python version
+            args '-u root'  // May be needed depending on permissions
+        }
     environment {
         DOCKER_REGISTRY = "584294315145.dkr.ecr.us-east-1.amazonaws.com"
         SONARQUBE_SERVER = "http://54.144.52.38:9000"
