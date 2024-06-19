@@ -28,7 +28,9 @@ pipeline {
                 set +x
                 . /home/ubuntu/myenv/bin/activate
                 """
-                sh 'pytest /home/ubuntu/workspace/hello_world_demo/tests/'
+                sh """
+                pytest /home/ubuntu/workspace/hello_world_demo/tests/
+               """
             }
         }
         
