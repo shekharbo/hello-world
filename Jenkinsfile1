@@ -38,10 +38,10 @@ pipeline {
             steps {
                 sh 'pip install coverage'
                 sh """
-                coverage run -m pytest /home/ubuntu/workspace/hello_world_demo/tests/test_main.py
+                /home/ubuntu/.local/bin/coverage run -m pytest /home/ubuntu/workspace/hello_world_demo/tests/test_main.py
                 """
-                sh 'coverage report'
-                sh 'coverage xml -o coverage.xml'
+                sh '/home/ubuntu/.local/bin/coverage report'
+                sh '/home/ubuntu/.local/bin/coverage xml -o coverage.xml'
                 publishCoverage adapters: [cobertura('coverage.xml')]
             }
         }
