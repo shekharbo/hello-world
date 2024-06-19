@@ -36,7 +36,10 @@ pipeline {
         
         stage('Code Coverage') {
             steps {
-                sh 'coverage run -m pytest'
+                sh 'pip install coverage'
+                sh """
+                coverage run -m pytest /home/ubuntu/workspace/hello_world_demo/tests/test_main.py
+                """
                 sh 'coverage report'
                 sh 'coverage xml -o coverage.xml'
                 publishCoverage adapters: [cobertura('coverage.xml')]
