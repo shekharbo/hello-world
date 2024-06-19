@@ -1,5 +1,7 @@
 pipeline {
-    agent any
+    agent {
+      label 'ec2'
+        }
 
     environment {
         DOCKER_REGISTRY = "584294315145.dkr.ecr.us-east-1.amazonaws.com"
