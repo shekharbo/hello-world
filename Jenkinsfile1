@@ -42,7 +42,7 @@ pipeline {
                 """
                 sh '/home/ubuntu/.local/bin/coverage report'
                 sh '/home/ubuntu/.local/bin/coverage xml -o coverage.xml'
-                publishCoverage adapters: [cobertura('coverage.xml')]
+                cobertura coberturaReportFile: 'coverage.xml'
             }
         }
         
