@@ -5,7 +5,7 @@ pipeline {
 
     environment {
         DOCKER_REGISTRY = "584294315145.dkr.ecr.us-east-1.amazonaws.com"
-        SONARQUBE_SERVER = "http://54.144.52.38:9000"
+        SONARQUBE_SERVER = "http://54.152.150.181:9000"
         AWS_REGION = "us-east-1"
         AWS_ECR_REPO = "github-poc"
     }
@@ -49,7 +49,7 @@ pipeline {
         stage('SCA and SonarQube') {
             steps {
                 withSonarQubeEnv('SonarQubeServer') {
-                    sh "sonar-scanner -Dsonar.projectKey=hello-world -Dsonar.sources=src -Dsonar.host.url=${SONARQUBE_SERVER} -Dsonar.login=squ_fbfc3d6e4838528f0ebc3bb4633196570f56aee3"
+                    sh "sonar-scanner -Dsonar.projectKey=hello-world -Dsonar.sources=src -Dsonar.host.url=${SONARQUBE_SERVER} -Dsonar.login=squ_031f99275d678658a83cb2960ef6cf99b2be9664"
                 }
             }
         }
