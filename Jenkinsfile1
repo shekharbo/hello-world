@@ -24,7 +24,8 @@ pipeline {
                 sh 'docker pull python:3.9'
                 sh 'pip install -r requirements.txt'
                 sh 'python3 -m venv ~/myenv'
-                sh 'source /home/ubuntu/myenv/bin/activate'
+                sh 'set +x 
+                . /home/ubuntu/myenv/bin/activate'
                 sh 'pytest /home/ubuntu/workspace/hello_world_demo/tests/'
             }
         }
