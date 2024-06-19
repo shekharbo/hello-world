@@ -29,7 +29,7 @@ pipeline {
                 . /home/ubuntu/myenv/bin/activate
                 """
                 sh """
-                pytest /home/ubuntu/workspace/hello_world_demo/tests/test_main.py
+                /home/ubuntu/myenv/bin/pytest /home/ubuntu/workspace/hello_world_demo/tests/test_main.py
                """
             }
         }
