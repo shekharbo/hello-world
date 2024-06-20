@@ -80,7 +80,7 @@ pipeline {
     steps {
         script {
             // Build the Docker image
-            def customImage = docker.build("${AWS_ECR_REGISTRY}/${DOCKER_IMAGE}")
+            def customImage = docker.build("${DOCKER_IMAGE}")
             
             // Tag the image for AWS ECR
             def awsECRImage = "${AWS_ECR_REGISTRY}/${DOCKER_IMAGE}"
