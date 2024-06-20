@@ -84,8 +84,7 @@ pipeline {
                 }
             }
         }
-    }
-}
+    
 
 
         stage('Image scan using Trivy') {
@@ -114,5 +113,5 @@ pipeline {
                 }
             }
         }
-    }
 }
+
