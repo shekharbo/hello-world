@@ -96,14 +96,12 @@ pipeline {
         stage('Push to AWS ECR') {
             steps {
                 script {
-                    withAWS(credentials: 'aws-credentials-id', region: AWS_REGION) {
-                        docker.withRegistry("${DOCKER_REGISTRY}", 'docker-credentials-id') {
-                            docker.image("${DOCKER_IMAGE}:${BUILD_NUMBER}").push()
+                    sh 'docker push 584294315145.dkr.ecr.us-east-1.amazonaws.com/github-poc:latest'
                         }
                     }
                 }
-            }
-        }
+            
+        
 
         // CD steps
         stage('Deploy application on EC2') {
