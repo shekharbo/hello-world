@@ -70,7 +70,7 @@ pipeline {
         
         stage('Build') {
             steps {
-                sh 'python setup.py sdist'
+                sh '/usr/bin/python3 setup.py sdist'
             }
         }
         
