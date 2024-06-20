@@ -76,20 +76,20 @@ pipeline {
             }
         }
         
-       stage('Build and tag image') {
+       stage('Build and tag image for AWS ECR') {
     steps {
         script {
             // Build the Docker image
-            def customImage = docker.build("584294315145.dkr.ecr.us-east-1.amazonaws.com:github-poc")
+            def customImage = docker.build("${DOCKER_IMAGE}")
             
             // Tag the image for AWS ECR
-            def awsECRImage = "584294315145.dkr.ecr.us-east-1.amazonaws.com:github-poc:latest"
+            def awsECRImage = "${AWS_ECR_REGISTRY}/${DOCKER_IMAGE}:latest"
             customImage.tag(awsECRImage)
             
             // Authenticate with AWS ECR using credentials stored in Jenkins
             withCredentials([usernamePassword(credentialsId: 'aws-ecr-credentials-id', passwordVariable: 'AWS_SECRET_ACCESS_KEY', usernameVariable: 'AWS_ACCESS_KEY_ID')]) {
-                docker.withRegistry(awsRegistry, 'ecr:us-east-1') {
-                    // Push the image to AWS ECR
+                // Push the image to AWS ECR
+                docker.withRegistry(awsECRRegistry, 'ecr:us-east-1') {
                     customImage.push()
                 }
             }
