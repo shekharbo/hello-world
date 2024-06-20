@@ -89,7 +89,7 @@ pipeline {
 
         stage('Image scan using Trivy') {
             steps {
-                sh '/usr/bin/trivy 584294315145.dkr.ecr.us-east-1.amazonaws.com/github-poc:latest' // Example command to scan Docker image with Trivy
+                sh '/usr/bin/trivy image 584294315145.dkr.ecr.us-east-1.amazonaws.com/github-poc:latest' // Example command to scan Docker image with Trivy
             }
         }
 
