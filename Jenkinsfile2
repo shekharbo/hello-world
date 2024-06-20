@@ -109,7 +109,7 @@ pipeline {
         // CD steps
         stage('Deploy application on EC2') {
             steps {
-                sshagent(credentials: ['ubuntu']) {
+                sshagent(credentials: ['ssh_key']) {
                     sh 'ssh  -o StrictHostKeyChecking=no ubuntu@52.205.167.69 "aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 584294315145.dkr.ecr.us-east-1.amazonaws.com"'
                     sh 'ssh -o  StrictHostKeyChecking=no ubuntu@52.205.167.69 "docker pull 584294315145.dkr.ecr.us-east-1.amazonaws.com/github-poc:latest"'
                     sh 'ssh  -o StrictHostKeyChecking=no ubuntu@52.205.167.69 "docker run -d --name jenkins_output -p 8082:8082 584294315145.dkr.ecr.us-east-1.amazonaws.com/github-poc:latest"'
