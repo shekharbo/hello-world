@@ -9,7 +9,7 @@ pipeline {
         SONARQUBE_SERVER = "http://52.205.167.69:9000"
         AWS_SECRET_ACCESS_KEY = "E8u5Bi+vZlTjuONVFhTvoH+pb/Xf8Z3I3FG9WDJZ"
         AWS_ACCESS_KEY_ID = "AKIAYQCVHWSEV7YDVG77"
-        DOCKER_IMAGE = "jenkins"
+        //DOCKER_IMAGE = "jenkins"
     }
     stages {
         stage('Checkout') {
@@ -80,10 +80,10 @@ pipeline {
     steps {
         script {
             // Build the Docker image
-            def customImage = docker.build("${DOCKER_IMAGE}")
+            def customImage = docker.build("584294315145.dkr.ecr.us-east-1.amazonaws.com:github-poc")
             
             // Tag the image for AWS ECR
-            def awsECRImage = "${AWS_ECR_REGISTRY}/${DOCKER_IMAGE}:latest"
+            def awsECRImage = "584294315145.dkr.ecr.us-east-1.amazonaws.com:github-poc:latest"
             customImage.tag(awsECRImage)
             
             // Authenticate with AWS ECR using credentials stored in Jenkins
