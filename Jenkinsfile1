@@ -80,10 +80,10 @@ pipeline {
     steps {
         script {
             // Build the Docker image
-            def customImage = docker.build("${AWS_ECR_REGISTRY}/${DOCKER_IMAGE}:latest")
+            def customImage = docker.build("${AWS_ECR_REGISTRY}/${DOCKER_IMAGE}")
             
             // Tag the image for AWS ECR
-            def awsECRImage = "${AWS_ECR_REGISTRY}/${DOCKER_IMAGE}:latest"
+            def awsECRImage = "${AWS_ECR_REGISTRY}/${DOCKER_IMAGE}"
             customImage.tag(awsECRImage)
             
             // Authenticate with AWS ECR using credentials stored in Jenkins
