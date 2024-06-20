@@ -4,10 +4,9 @@ pipeline {
         }
 
     environment {
-        DOCKER_REGISTRY = "584294315145.dkr.ecr.us-east-1.amazonaws.com"
+        DOCKER_REGISTRY = "https://hub.docker.com/repository/docker/shekharborse/hello-world/"
         SONARQUBE_SERVER = "http://52.205.167.69:9000"
-        AWS_REGION = "us-east-1"
-        AWS_ECR_REPO = "github-poc"
+        DOCKER_IMAGE = "hello-world"
     }
     stages {
         stage('Checkout') {
@@ -77,9 +76,9 @@ pipeline {
        stage('Build and tag image') {
             steps {
                 script {
-                    docker.build("${DOCKER_IMAGE}:${BUILD_NUMBER}")
+                    docker.build("${DOCKER_IMAGE}:latest")
                     docker.withRegistry("${DOCKER_REGISTRY}", 'docker-credentials-id') {
-                        docker.image("${DOCKER_IMAGE}:${BUILD_NUMBER}").push()
+                        docker.image("${DOCKER_IMAGE}:latest").push()
                     }
                 }
             }
