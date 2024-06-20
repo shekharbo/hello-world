@@ -55,7 +55,7 @@ pipeline {
                         def scannerHome = tool name: 'SonarQubeScanner', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
                         if (scannerHome) {
                             sh 'pwd'
-                            sh "home/hello-world-demo-python/hello-world/sonar-scanner-5.0.1.3006-linux/bin/sonar-scanner \
+                            sh "/home/hello-world-demo-python/hello-world/sonar-scanner-5.0.1.3006-linux/bin/sonar-scanner \
                                 -Dsonar.projectKey=hello-world \
                                 -Dsonar.sources=src \
                                 -Dsonar.host.url=http://52.205.167.69:9000 \
