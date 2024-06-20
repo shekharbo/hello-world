@@ -1,1 +1,118 @@
-Enter file contents here
+pipeline {
+    agent {
+      label 'ec2'
+        }
+
+    environment {
+        //DOCKER_REGISTRY = "584294315145.dkr.ecr.us-east-1.amazonaws.com"
+        AWS_ECR_REGISTRY = "584294315145.dkr.ecr.us-east-1.amazonaws.com"
+        SONARQUBE_SERVER = "http://52.205.167.69:9000"
+        AWS_SECRET_ACCESS_KEY = "E8u5Bi+vZlTjuONVFhTvoH+pb/Xf8Z3I3FG9WDJZ"
+        AWS_ACCESS_KEY_ID = "AKIAYQCVHWSEV7YDVG77"
+        //DOCKER_IMAGE = "jenkins"
+    }
+    stages {
+        stage('Checkout') {
+            steps {
+                retry(3) {
+                    checkout([$class: 'GitSCM', branches: [[name: '*/main']], userRemoteConfigs: [[url: 'https://github.com/shekharbo/hello-world.git']]])
+                }
+            }
+        }
+        
+        stage('Unit Test') {
+            steps {
+                sh 'docker --version'
+                sh 'docker pull python:3.9'
+                sh 'pip install -r requirements.txt'
+                sh 'python3 -m venv ~/myenv'
+                sh """
+                set +x
+                . /home/ubuntu/myenv/bin/activate
+                """
+                sh """
+                /home/ubuntu/.local/bin/pytest /home/ubuntu/workspace/hello_world_demo/tests/test_main.py
+               """
+            }
+        }
+        
+        stage('Code Coverage') {
+            steps {
+                sh 'pip install coverage'
+                sh """
+                /home/ubuntu/.local/bin/coverage run -m pytest /home/ubuntu/workspace/hello_world_demo/tests/test_main.py
+                """
+                sh '/home/ubuntu/.local/bin/coverage report'
+                sh '/home/ubuntu/.local/bin/coverage xml -o coverage.xml'
+                cobertura coberturaReportFile: 'coverage.xml'
+            }
+        }
+        
+        stage('SCA and SonarQube') {
+            steps {
+                // Configure SonarQube environment
+                withSonarQubeEnv('SonarQubeServer') {
+                    // Execute SonarScanner command
+                    script {
+                        def scannerHome = tool name: 'SonarQubeScanner', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
+                        if (scannerHome) {
+                            sh 'pwd'
+                            sh "/home/hello-world-demo-python/hello-world/sonar-scanner-5.0.1.3006-linux/bin/sonar-scanner \
+                                -Dsonar.projectKey=hello-world \
+                                -Dsonar.sources=src \
+                                -Dsonar.host.url=http://52.205.167.69:9000 \
+                                -Dsonar.login=squ_031f99275d678658a83cb2960ef6cf99b2be9664"
+                        } else {
+                            error "SonarQube Scanner not configured."
+                        }
+                    }
+                }
+            }
+        }
+        
+        stage('Build') {
+            steps {
+                sh '/usr/bin/python3 setup.py sdist'
+            }
+        }
+        
+       stage('Build and tag image for AWS ECR') {
+    steps {
+        script {
+            sh 'docker build -t hello-world .'
+            sh 'docker tag 584294315145.dkr.ecr.us-east-1.amazonaws.com/github-poc' 
+                }
+            }
+        }
+    }
+}
+
+
+        stage('Image scan using Trivy') {
+            steps {
+                sh 'trivy your-docker-image-name' // Example command to scan Docker image with Trivy
+            }
+        }
+
+        stage('Push to AWS ECR') {
+            steps {
+                script {
+                    withAWS(credentials: 'aws-credentials-id', region: AWS_REGION) {
+                        docker.withRegistry("${DOCKER_REGISTRY}", 'docker-credentials-id') {
+                            docker.image("${DOCKER_IMAGE}:${BUILD_NUMBER}").push()
+                        }
+                    }
+                }
+            }
+        }
+
+        // CD steps
+        stage('Deploy application on EC2') {
+            steps {
+                sshagent(credentials: ['ssh-private-key-id']) {
+                    sh 'ssh -o StrictHostKeyChecking=no ec2-user@your-ec2-instance "your-deployment-script"'
+                }
+            }
+        }
+    }
+}
