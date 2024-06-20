@@ -9,7 +9,7 @@ pipeline {
         SONARQUBE_SERVER = "http://52.205.167.69:9000"
         AWS_SECRET_ACCESS_KEY = "E8u5Bi+vZlTjuONVFhTvoH+pb/Xf8Z3I3FG9WDJZ"
         AWS_ACCESS_KEY_ID = "AKIAYQCVHWSEV7YDVG77"
-        DOCKER_IMAGE = "github-poc"
+        //DOCKER_IMAGE = "github-poc"
     }
     stages {
         stage('Checkout') {
