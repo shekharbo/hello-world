@@ -4,9 +4,11 @@ pipeline {
         }
 
     environment {
-        DOCKER_REGISTRY = "https://hub.docker.com/repository/docker/shekharborse/hello-world/"
+        DOCKER_REGISTRY = "584294315145.dkr.ecr.us-east-1.amazonaws.com"
+        AWS_ECR_REGISTRY = "584294315145.dkr.ecr.us-east-1.amazonaws.com"
         SONARQUBE_SERVER = "http://52.205.167.69:9000"
-        DOCKER_IMAGE = "hello-world"
+        AWS_SECRET_ACCESS_KEY = "
+        DOCKER_IMAGE = "github-poc"
     }
     stages {
         stage('Checkout') {
@@ -74,15 +76,26 @@ pipeline {
         }
         
        stage('Build and tag image') {
-            steps {
-                script {
-                    docker.build("${DOCKER_IMAGE}:latest")
-                    docker.withRegistry("${DOCKER_REGISTRY}", 'docker-credentials-id') {
-                        docker.image("${DOCKER_IMAGE}:latest").push()
-                    }
+    steps {
+        script {
+            // Build the Docker image
+            def customImage = docker.build("${DOCKER_IMAGE}:latest")
+            
+            // Tag the image for AWS ECR
+            def awsECRImage = "${AWS_ECR_REGISTRY}/${DOCKER_IMAGE}:latest"
+            customImage.tag(awsECRImage)
+            
+            // Authenticate with AWS ECR using credentials stored in Jenkins
+            withCredentials([usernamePassword(credentialsId: 'aws-ecr-credentials-id', passwordVariable: 'AWS_SECRET_ACCESS_KEY', usernameVariable: 'AWS_ACCESS_KEY_ID')]) {
+                docker.withRegistry(awsRegistry, 'ecr:us-east-1') {
+                    // Push the image to AWS ECR
+                    customImage.push()
                 }
             }
         }
+    }
+}
+
 
         stage('Image scan using Trivy') {
             steps {
