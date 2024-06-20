@@ -79,8 +79,8 @@ pipeline {
        stage('Build and tag image for AWS ECR') {
     steps {
         script {
-            sh 'docker build -t hello-world .'
-            sh 'docker tag 584294315145.dkr.ecr.us-east-1.amazonaws.com/github-poc' 
+            sh 'docker build -t github-poc .'
+            sh 'docker tag github-poc:latest 584294315145.dkr.ecr.us-east-1.amazonaws.com/github-poc:latest' 
                 }
             }
         }
