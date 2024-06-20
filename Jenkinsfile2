@@ -96,6 +96,7 @@ pipeline {
         stage('Push to AWS ECR') {
             steps {
                 script {
+                    sh '/usr/local/bin/aws get-login-password --region us-east-1 | docker login --username AWS --password-stdin 584294315145.dkr.ecr.us-east-1.amazonaws.com'
                     sh 'docker push 584294315145.dkr.ecr.us-east-1.amazonaws.com/github-poc:latest'
                         }
                     }
@@ -107,7 +108,7 @@ pipeline {
         stage('Deploy application on EC2') {
             steps {
                 sshagent(credentials: ['ssh-private-key-id']) {
-                    sh 'ssh -o StrictHostKeyChecking=no ec2-user@your-ec2-instance "your-deployment-script"'
+                    sh 'ssh -o StrictHostKeyChecking=no ubuntu@52.205.167.69 "your-deployment-script"'
                 }
             }
         }
